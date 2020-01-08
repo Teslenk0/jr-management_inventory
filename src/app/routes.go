@@ -12,6 +12,7 @@ func routes() {
 	//-------------------------------------------
 
 	router.GET("/items/:code", items.Get)
+	router.GET("/internal/items/search", items.Search)
 
 	//-------------------------------------------------------------------
 

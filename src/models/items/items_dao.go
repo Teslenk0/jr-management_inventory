@@ -14,6 +14,9 @@ const (
 	queryGetItemByCode = "SELECT code, title, COALESCE(description, '') as description, COALESCE(picture, '') as picture, price, internal_price, available_quantity, sold_quantity, provider, category, date_created FROM items WHERE code=?;"
 	queryUpdateItem    = "UPDATE items SET title=?, description=?, picture=?, price=?, internal_price=?, available_quantity=?, sold_quantity=?, category=? WHERE code=?;"
 	queryDeleteItem    = "DELETE FROM items WHERE code=?;"
+
+	//Complex operations
+	querySearchItem = `SELECT code, title, COALESCE(description, '') as description, COALESCE(picture, '') as picture, price, internal_price, available_quantity, sold_quantity, provider, category, date_created FROM items WHERE title LIKE '%'||?||'%' ;`
 )
 
 //Get item
@@ -104,5 +107,39 @@ func (item *Item) Update() *rest_errors.RestError {
 		return rest_errors.NewInternalServerError("error when trying to update the item", err)
 	}
 	return nil
+
+}
+
+func (item *Item) SearchItem(wanted string) ([]Item, *rest_errors.RestError) {
+
+	stmt, err := mysql.Client.Prepare(querySearchItem)
+	if err != nil {
+		logger.Error("error when trying to prepare the search item statement", err)
+		return nil, rest_errors.NewInternalServerError("error when trying to prepare search item statement", err)
+	}
+
+	defer stmt.Close()
+	rows, err := stmt.Query(wanted)
+	if err != nil {
+		logger.Error("error when trying to search the users", err)
+		return nil, rest_errors.NewInternalServerError("error when trying to find the item", err)
+	}
+	defer rows.Close()
+
+	results := make([]Item, 0)
+	for rows.Next() {
+		var obj Item
+		if err := rows.Scan(&obj.Code, &obj.Title, &obj.Description, &obj.Picture, &obj.Price, &obj.InternalPrice, &obj.AvailableQuantity, &obj.SoldQuantity, &obj.Provider, &obj.Category, &obj.DateCreated); err != nil {
+			logger.Error("error when trying fill the struct with database data in search item method", err)
+			return nil, rest_errors.NewInternalServerError("database error", err)
+		}
+		results = append(results, obj)
+	}
+
+	if len(results) == 0 {
+		return nil, rest_errors.NewNotFoundError("no item matching given parameter")
+	}
+
+	return results, nil
 
 }

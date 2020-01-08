@@ -13,6 +13,7 @@ type itemsServiceInterface interface {
 	CreateItem(item items.Item) (*items.Item, *rest_errors.RestError)
 	DeleteItem(itemCode string) *rest_errors.RestError
 	UpdateItem(isPartial bool, item items.Item) (*items.Item, *rest_errors.RestError)
+	SearchItem(wanted string) (items.Items, *rest_errors.RestError)
 }
 
 //Struct
@@ -117,4 +118,9 @@ func (s *itemsService) UpdateItem(isPartial bool, item items.Item) (*items.Item,
 		return nil, err
 	}
 	return current, nil
+}
+
+func (s *itemsService) SearchItem(wanted string) (items.Items, *rest_errors.RestError) {
+	dao := &items.Item{}
+	return dao.SearchItem(wanted)
 }
