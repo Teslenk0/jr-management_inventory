@@ -13,7 +13,9 @@ type Item struct {
 	InternalPrice     float32 `json:"internal_price"`
 	AvailableQuantity int     `json:"available_quantity"`
 	SoldQuantity      int     `json:"sold_quantity"`
-	Provider          int     `json:"provider"`
+	Provider          string  `json:"provider"`
+	Category          string  `json:"category"`
+	DateCreated       string  `json:"date_created"`
 }
 
 type Items []Item
@@ -38,5 +40,14 @@ func (item *Item) Validate() *rest_errors.RestError {
 	if item.AvailableQuantity < 0 {
 		return rest_errors.NewBadRequestError("available quantity must be zero or greater")
 	}
+
+	if item.Category == "" {
+		return rest_errors.NewBadRequestError("category must not be blank")
+	}
+
+	if item.Provider == "" {
+		return rest_errors.NewBadRequestError("provider must not be blank")
+	}
+
 	return nil
 }

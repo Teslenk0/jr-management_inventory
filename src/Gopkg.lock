@@ -11,9 +11,10 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:91fd1dce39947e828430dfb6113749dece211fd8869c686836f37121c4cf2817"
+  digest = "1:5ab24fa2e96ed4d4a33c685bfa6e98d089cde921d03878eda019eec0abd74fb0"
   name = "github.com/Teslenk0/utils-go"
   packages = [
+    "date",
     "logger",
     "rest_errors",
   ]
@@ -259,6 +260,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/Teslenk0/utils-go/date",
     "github.com/Teslenk0/utils-go/logger",
     "github.com/Teslenk0/utils-go/rest_errors",
     "github.com/gin-gonic/gin",
