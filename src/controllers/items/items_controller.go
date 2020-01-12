@@ -1,7 +1,6 @@
 package items
 
 import (
-	"fmt"
 	"github.com/Teslenk0/jr-management_inventory/src/models/items"
 	"github.com/Teslenk0/jr-management_inventory/src/services"
 	"github.com/Teslenk0/utils-go/rest_errors"
@@ -78,7 +77,6 @@ func Update(c *gin.Context) {
 //Search - looks for desired item
 func Search(c *gin.Context) {
 	q := c.Query("q")
-	fmt.Println(q)
 	items, err := services.ItemsServices.SearchItem(q)
 	if err != nil {
 		c.JSON(err.Status, err)

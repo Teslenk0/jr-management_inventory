@@ -16,7 +16,7 @@ const (
 	queryDeleteItem    = "DELETE FROM items WHERE code=?;"
 
 	//Complex operations
-	querySearchItem = `SELECT code, title, COALESCE(description, '') as description, COALESCE(picture, '') as picture, price, internal_price, available_quantity, sold_quantity, provider, category, date_created FROM items WHERE title LIKE '%'||?||'%' ;`
+	querySearchItem = "SELECT code, title, COALESCE(description, '') as description, COALESCE(picture, '') as picture, price, internal_price, available_quantity, sold_quantity, provider, category, date_created FROM items WHERE title LIKE ? OR description LIKE ?;"
 )
 
 //Get item
@@ -110,6 +110,7 @@ func (item *Item) Update() *rest_errors.RestError {
 
 }
 
+//Search items in database that contains wanted string in the title or description
 func (item *Item) SearchItem(wanted string) ([]Item, *rest_errors.RestError) {
 
 	stmt, err := mysql.Client.Prepare(querySearchItem)
@@ -119,7 +120,8 @@ func (item *Item) SearchItem(wanted string) ([]Item, *rest_errors.RestError) {
 	}
 
 	defer stmt.Close()
-	rows, err := stmt.Query(wanted)
+
+	rows, err := stmt.Query("%"+wanted+"%", "%"+wanted+"%")
 	if err != nil {
 		logger.Error("error when trying to search the users", err)
 		return nil, rest_errors.NewInternalServerError("error when trying to find the item", err)
